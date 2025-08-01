@@ -1,44 +1,38 @@
 import streamlit as st
-import json
 import os
 
 # Wasserzeichen als Kommentar:
 # Dieses Programm gehört Cornelius Wolf
 
-st.title("CoC KI Trainer - Video Upload")
-
-# Ordner für Video-Uploads
-UPLOAD_DIR = "videos"  # Du hattest 'videos' verwendet - behalten wir so
-
-# Stelle sicher, dass der Ordner existiert
-if not os.path.exists(UPLOAD_DIR):
-    os.makedirs(UPLOAD_DIR)
+st.title("CoC KI Trainer - Video Upload und Download")
 
 # Upload-Funktion für Videos
 uploaded_video = st.file_uploader("Lade dein Angriffs-Video hoch", type=["mp4", "mov", "avi"])
 
 if uploaded_video is not None:
-    video_path = os.path.join(UPLOAD_DIR, uploaded_video.name)
+    # Speicherpfad
+    if not os.path.exists("videos"):
+        os.makedirs("videos")
 
-    # Speichern des Videos
+    video_path = os.path.join("videos", uploaded_video.name)
+
+    # Speichern des Videos auf dem Server (temporär)
     with open(video_path, "wb") as f:
         f.write(uploaded_video.getbuffer())
+
     st.success(f"Video '{uploaded_video.name}' wurde gespeichert!")
 
-# Beispiel: Angriffe aus JSON laden und anzeigen
-def lade_angriffe():
-    try:
-        with open("angriffe.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
+    # Video in der App abspielen
+    st.video(video_path)
 
-angriffe = lade_angriffe()
+    # Download-Button anzeigen, um Video auf deinen PC zu laden
+    with open(video_path, "rb") as f:
+        video_bytes = f.read()
 
-st.header("Bisher gespeicherte Angriffe")
-
-for a in angriffe:
-    st.write(f"Spieler: {a['spieler']}, Beschreibung: {a['beschreibung']}")
-
-
+    st.download_button(
+        label="Video herunterladen",
+        data=video_bytes,
+        file_name=uploaded_video.name,
+        mime="video/mp4"
+    )
 
