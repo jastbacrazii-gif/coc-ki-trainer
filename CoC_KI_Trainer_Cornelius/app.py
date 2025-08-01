@@ -7,15 +7,18 @@ import os
 
 st.title("CoC KI Trainer - Video Upload")
 
+# Ordner für Video-Uploads
+UPLOAD_DIR = "videos"  # Du hattest 'videos' verwendet - behalten wir so
+
+# Stelle sicher, dass der Ordner existiert
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
 # Upload-Funktion für Videos
 uploaded_video = st.file_uploader("Lade dein Angriffs-Video hoch", type=["mp4", "mov", "avi"])
 
 if uploaded_video is not None:
-    # Speicherpfad
-    if not os.path.exists("videos"):
-        os.makedirs("videos")
-
-    video_path = os.path.join("videos", uploaded_video.name)
+    video_path = os.path.join(UPLOAD_DIR, uploaded_video.name)
 
     # Speichern des Videos
     with open(video_path, "wb") as f:
@@ -36,5 +39,6 @@ st.header("Bisher gespeicherte Angriffe")
 
 for a in angriffe:
     st.write(f"Spieler: {a['spieler']}, Beschreibung: {a['beschreibung']}")
+
 
 
